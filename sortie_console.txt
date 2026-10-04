@@ -1,0 +1,192 @@
+
+> url <- "https://datahub.io/core/s-and-p-500-companies-financials/_r/-/data/constituents-financials.csv"
+
+> url_github <- "https://raw.githubusercontent.com/datasets/s-and-p-500-companies-financials/main/data/constituents-financials.csv"
+
+> sp <- tryCatch(read.csv(url), error = function(e) read.csv(url_github))
+
+> dim(sp)
+[1] 503  14
+
+> names(sp)
+ [1] "Symbol"         "Name"           "Sector"         "Price"          "Price.Earnings" "Dividend.Yield"
+ [7] "Earnings.Share" "X52.Week.Low"   "X52.Week.High"  "Market.Cap"     "EBITDA"         "Price.Sales"   
+[13] "Price.Book"     "SEC.Filings"   
+
+> summary(sp)
+    Symbol              Name              Sector              Price          Price.Earnings    
+ Length:503         Length:503         Length:503         Min.   :   0.522   Min.   :   0.032  
+ Class :character   Class :character   Class :character   1st Qu.:  67.530   1st Qu.:  15.831  
+ Mode  :character   Mode  :character   Mode  :character   Median : 132.185   Median :  22.307  
+                                                          Mean   : 218.997   Mean   :  55.214  
+                                                          3rd Qu.: 263.085   3rd Qu.:  32.489  
+                                                          Max.   :5993.850   Max.   :9001.334  
+                                                          NA's   :17         NA's   :45        
+ Dividend.Yield    Earnings.Share     X52.Week.Low      X52.Week.High       Market.Cap       
+ Min.   :0.00004   Min.   :-21.490   Min.   :   0.513   Min.   :  17.65   Min.   :2.355e+06  
+ 1st Qu.:0.01055   1st Qu.:  2.550   1st Qu.:  54.820   1st Qu.:  88.65   1st Qu.:1.862e+10  
+ Median :0.01990   Median :  5.680   Median : 103.110   Median : 169.30   Median :3.851e+10  
+ Mean   :0.02331   Mean   :  9.262   Mean   : 165.603   Mean   : 275.63   Mean   :1.466e+11  
+ 3rd Qu.:0.03315   3rd Qu.: 10.900   3rd Qu.: 187.968   3rd Qu.: 315.71   3rd Qu.:9.234e+10  
+ Max.   :0.08120   Max.   :384.810   Max.   :5501.010   Max.   :8200.00   Max.   :5.649e+12  
+ NA's   :104       NA's   :17        NA's   :17         NA's   :17        NA's   :17         
+     EBITDA            Price.Sales        Price.Book       SEC.Filings       
+ Min.   :-2.900e+09   Min.   : 0.1726   Min.   :-314.902   Length:503        
+ 1st Qu.: 1.796e+09   1st Qu.: 1.5334   1st Qu.:   1.671   Class :character  
+ Median : 3.456e+09   Median : 2.9425   Median :   2.861   Mode  :character  
+ Mean   : 8.857e+09   Mean   : 4.4191   Mean   :  13.592                     
+ 3rd Qu.: 7.081e+09   3rd Qu.: 5.6344   3rd Qu.:   6.830                     
+ Max.   : 2.013e+11   Max.   :73.6812   Max.   :2322.172                     
+ NA's   :44           NA's   :18        NA's   :20                           
+
+> n_complets <- sum(complete.cases(sp))
+
+> n_incomplets <- sum(!complete.cases(sp))
+
+> cat("Individus complets   :", n_complets, "\n")
+Individus complets   : 350 
+
+> cat("Individus incomplets :", n_incomplets, "\n")
+Individus incomplets : 153 
+
+> colSums(is.na(sp))
+        Symbol           Name         Sector          Price Price.Earnings Dividend.Yield Earnings.Share 
+             0              0              0             17             45            104             17 
+  X52.Week.Low  X52.Week.High     Market.Cap         EBITDA    Price.Sales     Price.Book    SEC.Filings 
+            17             17             17             44             18             20              0 
+
+> gics <- list(`Communication Services` = c("Advertising", 
++     "Broadcasting", "Cable & Satellite", "Integrated Telecommunication Services", 
++     "Interactive Home Entertainment", "Interactive Media & Services", 
++     "Movies & Entertainment", "Publishing", "Wireless Telecommunication Services"), 
++     `Consumer Discretionary` = c("Apparel Retail", "Apparel, Accessories & Luxury Goods", 
++         "Automobile Manufacturers", "Automotive Parts & Equipment", 
++         "Automotive Retail", "Broadline Retail", "Casinos & Gaming", 
++         "Computer & Electronics Retail", "Consumer Electronics", 
++         "Distributors", "Footwear", "Home Furnishings", "Home Improvement Retail", 
++         "Homebuilding", "Hotels, Resorts & Cruise Lines", "Leisure Products", 
++         "Other Specialty Retail", "Restaurants"), `Consumer Staples` = c("Agricultural Products & Services", 
++         "Brewers", "Consumer Staples Merchandise Retail", "Distillers & Vintners", 
++         "Drug Retail", "Food Distributors", "Food Retail", "Household Products", 
++         "Packaged Foods & Meats", "Personal Care Products", "Soft Drinks & Non-alcoholic Beverages", 
++         "Tobacco"), Energy = c("Integrated Oil & Gas", "Oil & Gas Equipment & Services", 
++         "Oil & Gas Exploration & Production", "Oil & Gas Refining & Marketing", 
++         "Oil & Gas Storage & Transportation"), Financials = c("Asset Management & Custody Banks", 
++         "Consumer Finance", "Diversified Banks", "Financial Exchanges & Data", 
++         "Insurance Brokers", "Investment Banking & Brokerage", 
++         "Life & Health Insurance", "Multi-Sector Holdings", "Multi-line Insurance", 
++         "Property & Casualty Insurance", "Regional Banks", "Reinsurance", 
++         "Transaction & Payment Processing Services"), `Health Care` = c("Biotechnology", 
++         "Health Care Distributors", "Health Care Equipment", 
++         "Health Care Facilities", "Health Care Services", "Health Care Supplies", 
++         "Health Care Technology", "Life Sciences Tools & Services", 
++         "Managed Health Care", "Pharmaceuticals"), Industrials = c("Aerospace & Defense", 
++         "Agricultural & Farm Machinery", "Air Freight & Logistics", 
++         "Building Products", "Cargo Ground Transportation", "Construction & Engineering", 
++         "Construction Machinery & Heavy Transportation Equipment", 
++         "Data Processing & Outsourced Services", "Diversified Support Services", 
++         "Electrical Components & Equipment", "Environmental & Facilities Services", 
++         "Heavy Electrical Equipment", "Human Resource & Employment Services", 
++         "Industrial Conglomerates", "Industrial Machinery & Supplies & Components", 
++         "Passenger Airlines", "Passenger Ground Transportation", 
++         "Rail Transportation", "Research & Consulting Services", 
++         "Trading Companies & Distributors"), `Information Technology` = c("Application Software", 
++         "Communications Equipment", "Electronic Components", 
++         "Electronic Equipment & Instruments", "Electronic Manufacturing Services", 
++         "Internet Services & Infrastructure", "IT Consulting & Other Services", 
++         "Semiconductor Materials & Equipment", "Semiconductors", 
++         "Systems Software", "Technology Distributors", "Technology Hardware, Storage & Peripherals"), 
++     Materials = c("Commodity Chemicals", "Construction Materials", 
++         "Copper", "Fertilizers & Agricultural Chemicals", "Gold", 
++         "Industrial Gases", "Metal, Glass & Plastic Containers", 
++         "Paper & Plastic Packaging Products & Materials", "Specialty Chemicals", 
++         "Steel"), `Real Estate` = c("Data Center REITs", "Health Care REITs", 
++         "Hotel & Resort REITs", "Industrial REITs", "Multi-Family Residential REITs", 
++         "Office REITs", "Other Specialized REITs", "Real Estate Services", 
++         "Retail REITs", "Self-Storage REITs", "Single-Family Residential REITs", 
++         "Telecom Tower REITs", "Timber REITs"), Utilities = c("Electric Utilities", 
++         "Gas Utilities", "Independent Power Producers & Energy Traders", 
++         "Multi-Utilities", "Water Utilities"))
+
+> correspondance <- setNames(rep(names(gics), lengths(gics)), 
++     unlist(gics))
+
+> sp$Secteur <- factor(correspondance[sp$Sector])
+
+> cat("Sous-industries non class\303\251es :", sum(is.na(sp$Secteur)), 
++     "\n")
+Sous-industries non classées : 0 
+
+> table(sp$Secteur)
+
+Communication Services Consumer Discretionary       Consumer Staples                 Energy 
+                    22                     50                     38                     22 
+            Financials            Health Care            Industrials Information Technology 
+                    72                     62                     78                     69 
+             Materials            Real Estate              Utilities 
+                    28                     31                     31 
+
+> sans_donnees <- is.na(sp$Price)
+
+> sp$Dividende <- factor(ifelse(!is.na(sp$Dividend.Yield) & 
++     sp$Dividend.Yield > 0, "oui", "non"), levels = c("non", "oui"))
+
+> sp$Dividende[sans_donnees] <- NA
+
+> table(sp$Dividende, useNA = "ifany")
+
+ non  oui <NA> 
+  87  399   17 
+
+> sp$Taille <- cut(sp$Market.Cap, breaks = quantile(sp$Market.Cap, 
++     probs = c(0, 1/3, 2/3, 1), na.rm = TRUE), labels = c("petite", 
++     "moyenne", "grande"), include.lowest = TRUE, ordered_result = TRUE)
+
+> quantile(sp$Market.Cap, probs = c(0, 1/3, 2/3, 1), 
++     na.rm = TRUE)/1e+09
+          0%    33.33333%    66.66667%         100% 
+2.355484e-03 2.370019e+01 7.101342e+01 5.649191e+03 
+
+> table(sp$Taille, useNA = "ifany")
+
+ petite moyenne  grande    <NA> 
+    162     162     162      17 
+
+> sp$ProcheHaut <- factor(ifelse(sp$Price > 0.9 * sp$X52.Week.High, 
++     "oui", "non"), levels = c("non", "oui"))
+
+> table(sp$ProcheHaut, useNA = "ifany")
+
+ non  oui <NA> 
+ 386  100   17 
+
+> summary(sp[, c("Price", "Price.Earnings", "Earnings.Share", 
++     "Dividend.Yield", "Market.Cap", "EBITDA", "Price.Sales", 
++     "Price.Book", "Secteur", "Dividende", "Taille", "ProcheHaut")])
+     Price          Price.Earnings     Earnings.Share    Dividend.Yield      Market.Cap       
+ Min.   :   0.522   Min.   :   0.032   Min.   :-21.490   Min.   :0.00004   Min.   :2.355e+06  
+ 1st Qu.:  67.530   1st Qu.:  15.831   1st Qu.:  2.550   1st Qu.:0.01055   1st Qu.:1.862e+10  
+ Median : 132.185   Median :  22.307   Median :  5.680   Median :0.01990   Median :3.851e+10  
+ Mean   : 218.997   Mean   :  55.214   Mean   :  9.262   Mean   :0.02331   Mean   :1.466e+11  
+ 3rd Qu.: 263.085   3rd Qu.:  32.489   3rd Qu.: 10.900   3rd Qu.:0.03315   3rd Qu.:9.234e+10  
+ Max.   :5993.850   Max.   :9001.334   Max.   :384.810   Max.   :0.08120   Max.   :5.649e+12  
+ NA's   :17         NA's   :45         NA's   :17        NA's   :104       NA's   :17         
+     EBITDA            Price.Sales        Price.Book                         Secteur    Dividende 
+ Min.   :-2.900e+09   Min.   : 0.1726   Min.   :-314.902   Industrials           : 78   non : 87  
+ 1st Qu.: 1.796e+09   1st Qu.: 1.5334   1st Qu.:   1.671   Financials            : 72   oui :399  
+ Median : 3.456e+09   Median : 2.9425   Median :   2.861   Information Technology: 69   NA's: 17  
+ Mean   : 8.857e+09   Mean   : 4.4191   Mean   :  13.592   Health Care           : 62             
+ 3rd Qu.: 7.081e+09   3rd Qu.: 5.6344   3rd Qu.:   6.830   Consumer Discretionary: 50             
+ Max.   : 2.013e+11   Max.   :73.6812   Max.   :2322.172   Consumer Staples      : 38             
+ NA's   :44           NA's   :18        NA's   :20         (Other)               :134             
+     Taille    ProcheHaut
+ petite :162   non :386  
+ moyenne:162   oui :100  
+ grande :162   NA's: 17  
+ NA's   : 17             
+                         
+                         
+                         
+Warning message:
+In file(file, "rt") :
+  URL 'https://datahub.io/core/s-and-p-500-companies-financials/_r/-/data/constituents-financials.csv': status was 'HTTP response code said error'
